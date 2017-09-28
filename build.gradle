@@ -1,14 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.2-4'
+    ext.kotlin_version = '1.1.4'
     repositories {
         google()
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -17,12 +17,13 @@ buildscript {
 }
 
 ext {
-    compileSdkVersion = 25
-    buildToolsVersion = "26.0.0"
+    compileSdkVersion = 26
+    buildToolsVersion = "26.0.1"
     minSdkVersion = 21
-    targetSdkVersion = 25
-    supportLibVersion = "25.3.1"
+    targetSdkVersion = 26
+    supportLibVersion = "26.0.0-beta1"
     espressoVersion = "2.2.2"
+    constraintLayoutVersion = "1.0.2"
 }
 
 allprojects {
@@ -35,4 +36,21 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+def getFilter(key) {
+    def environment = hasProperty('env') ? env : key
+    Properties props = new Properties()
+    props.load(new FileInputStream(file("app/src/main/filters/" + environment + ".properties")))
+    return props
+}
+
+def valueType(value) {
+    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+        return "boolean"
+    } else if (value ==~ /\d+/) {
+        return "int"
+    } else {
+        return "String"
+    }
 }

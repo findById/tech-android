@@ -64,23 +64,6 @@ android {
     }
 }
 
-def getFilter(key) {
-    def environment = hasProperty('env') ? env : key
-    Properties props = new Properties()
-    props.load(new FileInputStream(file("src/main/filters/" + environment + ".properties")))
-    return props
-}
-
-def valueType(value) {
-    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-        return "boolean"
-    } else if (value ==~ /\d+/) {
-        return "int"
-    } else {
-        return "String"
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation("com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}", {
@@ -90,7 +73,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}"
     implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
     implementation 'com.android.support:multidex:1.0.1'
 }

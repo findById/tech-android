@@ -1,1 +1,1 @@
-include ':app', ':platform'
+include ':app', ':platform', ':orm'

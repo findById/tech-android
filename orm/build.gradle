@@ -1,0 +1,97 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.0.0-beta1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+}
+
+tasks.withType(JavaCompile) {
+    options.setEncoding("UTF-8")
+}
+
+tasks.withType(Javadoc) {
+    options.setEncoding("UTF-8")
+}
+
+//install {
+//    repositories.mavenInstaller {
+//        pom.project {
+//            packaging 'jar'
+//            name project.name
+//            description project.name
+//            groupId "$project.group"
+//            artifactId project.name
+//            version project.version
+//        }
+//    }
+//}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        repository(url: 'http://192.168.0.100:8081/repository/maven-tech/') {
+            authentication(userName: "tech-admin", password: "123456")
+        }
+        pom.project {
+            url 'http://192.168.0.100:8081/repository/maven-tech/'
+            packaging 'jar'
+            name project.name
+            description project.name
+            groupId "$project.group"
+            artifactId project.name
+            version project.version
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    // from sourceSets.main.allSource
+    // from sourceSets.main.java.sourceFiles
+    from android.sourceSets.main.java.sourceFiles
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
