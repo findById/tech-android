@@ -98,15 +98,17 @@ public class SQLUtil {
         sql.append(" SET ");
 
         for (Field field : clazz.getDeclaredFields()) {
+            Id id = field.getAnnotation(Id.class);
+            if (id != null) {
+                continue;
+            }
             if (field.getAnnotation(Column.class) != null) {
                 sql.append(AnnotateSupport.getColumnName(field)).append("=?,");
             }
         }
 
         sql.replace(sql.length() - 1, sql.length(), "");
-//        Object[] obj = AnnotateSupport.getIdValue(object);
-//        sql.append(" WHERE ").append(String.valueOf(obj[0])).append("=").append(obj[1]);
-        sql.append(" WHERE ").append("?").append("=").append("?");
+        sql.append(" WHERE ").append(AnnotateSupport.getIdName(clazz)).append("=").append("?");
 
         SQLCache.put(SQLUtil.UPDATE_FLAG + AnnotateSupport.getEntityName(clazz), sql.toString());
         return sql.toString();
@@ -156,6 +158,29 @@ public class SQLUtil {
         return sql.toString();
     }
 
+    /**
+     * 不获取主键的值
+     */
+    public static Object[] getUpdateValues(Object object) {
+        Class<?> clazz = object.getClass();
+        List<Object> list = new ArrayList<>();
+
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field == null) {
+                continue;
+            }
+            Id id = field.getAnnotation(Id.class);
+            if (id != null) {
+                continue;
+            }
+            if (field.getAnnotation(Column.class) != null) {
+                list.add(ReflectSupport.getFieldValue(field, object));
+            }
+        }
+
+        return list.toArray(new Object[list.size()]);
+    }
+
     public static Object[] getValues(Object object) {
         Class<?> clazz = object.getClass();
         List<Object> list = new ArrayList<>();
@@ -166,7 +191,7 @@ public class SQLUtil {
             }
         }
 
-        return list.toArray(new Object[list.size()]);
+        return list.toArray();
     }
 
     public static Object invokeMethod(Class<?> clazz, ResultSet result) {

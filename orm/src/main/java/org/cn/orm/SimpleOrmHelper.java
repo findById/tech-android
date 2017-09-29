@@ -11,6 +11,7 @@ import org.cn.orm.utils.SQLiteUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SimpleOrmHelper implements OrmHelper {
 
@@ -54,7 +55,10 @@ public class SimpleOrmHelper implements OrmHelper {
     @Override
     public void update(Object object) {
         String sql = SQLUtil.update(object);
-        helper.executeUpdate(sql, SQLUtil.getValues(object), AnnotateSupport.getIdValue(object));
+        Object[] temp = SQLUtil.getUpdateValues(object);
+        Object[] values = Arrays.copyOf(temp, temp.length + 1);
+        values[temp.length] = AnnotateSupport.getIdValue(object)[1];
+        helper.executeUpdate(sql, values);
     }
 
     @Override

@@ -51,7 +51,14 @@ public class AnnotateSupport {
 
     public static String getIdName(Field field, Id id) {
         if (id != null) {
-            return (id.value() == null || id.value().length() <= 0) ? field.getName() : id.value();
+            if (id.value().length() > 0) {
+                return id.value();
+            }
+            Column column = field.getAnnotation(Column.class);
+            if (column != null && column.name().length() > 0) {
+                return column.name();
+            }
+            return field.getName();
         }
         return null;
     }
