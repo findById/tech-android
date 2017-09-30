@@ -8,8 +8,6 @@ public class ReflectSupport {
 
     /**
      * 通过getter获取对象值
-     *
-     * @param object
      */
     public static void getMethodValues(Object object) {
         Class<?> clazz = object.getClass();
@@ -25,8 +23,6 @@ public class ReflectSupport {
 
     /**
      * 通过public字段直接获取对象值
-     *
-     * @param object
      */
     public static void getFieldValues(Object object) {
         Class<?> clazz = object.getClass();
@@ -39,10 +35,6 @@ public class ReflectSupport {
 
     /**
      * 通过public (field)字段直接获取值
-     *
-     * @param field
-     * @param object
-     * @return
      */
     public static Object getFieldValue(Field field, Object object) {
         try {
@@ -61,10 +53,6 @@ public class ReflectSupport {
 
     /**
      * 通过method (getter)获取对象值
-     *
-     * @param method
-     * @param object
-     * @return
      */
     public static Object getMethodValue(Method method, Object object) {
         try {
@@ -87,13 +75,6 @@ public class ReflectSupport {
 
     /**
      * 通过setter赋值
-     *
-     * @param clazz
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      */
     public static Object invokeMethod(Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Object object = clazz.newInstance();
@@ -110,11 +91,6 @@ public class ReflectSupport {
 
     /**
      * 通过public字段直接赋值
-     *
-     * @param clazz
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
      */
     public static Object invokeField(Class<?> clazz) throws InstantiationException, IllegalAccessException {
         Object object = clazz.newInstance();

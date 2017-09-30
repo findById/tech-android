@@ -14,8 +14,8 @@ public interface Query {
 
     int executeUpdate();
 
-    List list();
+    List getResultList();
 
-    Object uniqueResult();
+    Object getSingleResult();
 
 }

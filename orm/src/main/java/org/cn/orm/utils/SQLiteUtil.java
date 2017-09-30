@@ -11,6 +11,9 @@ import java.lang.reflect.Method;
 
 public class SQLiteUtil {
 
+    /**
+     * 读取游标中的数据
+     */
     public static Object invokeMethod(Class<?> clazz, Cursor cursor) {
         Object object = null;
         try {
@@ -32,6 +35,9 @@ public class SQLiteUtil {
         return object;
     }
 
+    /**
+     * 读取游标中的数据
+     */
     public static Object invokeField(Class<?> clazz, Cursor cursor) {
         Object object = null;
         try {
@@ -58,10 +64,6 @@ public class SQLiteUtil {
 
     /**
      * 通过method (setter) 获取游标中的数据
-     *
-     * @param method
-     * @param cursor
-     * @return
      */
     private static Object getValueByMethod(Method method, Cursor cursor) {
         Class<?> params = method.getParameterTypes()[0];
@@ -88,10 +90,6 @@ public class SQLiteUtil {
 
     /**
      * 通过field获取游标中的数据
-     *
-     * @param field
-     * @param cursor
-     * @return
      */
     private static Object getValueByField(Column column, Field field, Cursor cursor) {
         Class<?> params = field.getType();

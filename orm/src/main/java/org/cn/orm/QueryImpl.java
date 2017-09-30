@@ -65,7 +65,7 @@ public class QueryImpl implements Query {
     }
 
     @Override
-    public List list() {
+    public List getResultList() {
         if (maxResults > 0 && !query.toString().toUpperCase().contains("LIMIT ")) {
             query.append(" LIMIT ").append(firstResult).append(",").append(maxResults);
         }
@@ -85,7 +85,7 @@ public class QueryImpl implements Query {
     }
 
     @Override
-    public Object uniqueResult() {
+    public Object getSingleResult() {
         Cursor cursor = helper.executeQuery(query.toString());
         cursor.moveToFirst();
         return SQLiteUtil.invokeField(entity, cursor);

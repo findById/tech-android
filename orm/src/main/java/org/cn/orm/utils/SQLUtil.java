@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLUtil {
-    public static final String UPDATE_FLAG = "update.flag";
-    public static final String SAVE_FLAG = "save.flag";
-    public static final String DELETE_FLAG = "delete.flag";
+    private static final String UPDATE = "update";
+    private static final String INSERT = "insert";
+    private static final String DELETE = "delete";
 
     public static String createTable(Class<?> clazz) {
-        StringBuffer sql = new StringBuffer();
+        StringBuilder sql = new StringBuilder();
         sql.append("CREATE TABLE IF NOT EXISTS ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append("(");
@@ -45,28 +45,29 @@ public class SQLUtil {
     }
 
     public static String findById(Class<?> clazz) {
-        StringBuffer sql = new StringBuffer();
+        StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM ");
         sql.append(AnnotateSupport.getEntityName(clazz));
-        sql.append(" WHERE ").append(AnnotateSupport.getIdName(clazz));
+        sql.append(" WHERE ");
+        sql.append(AnnotateSupport.getIdName(clazz));
         sql.append("=?");
         return sql.toString();
     }
 
-    public static String save(Object object) {
+    public static String insert(Object object) {
         Class<?> clazz = object.getClass();
-        String cached = SQLCache.get(SQLUtil.SAVE_FLAG + AnnotateSupport.getEntityName(clazz));
+        String cached = SQLCache.get(SQLUtil.INSERT + AnnotateSupport.getEntityName(clazz));
 
         if (cached != null && cached.length() > 0) {
             return cached;
         }
 
-        StringBuffer sql = new StringBuffer();
+        StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append("(");
 
-        StringBuffer value = new StringBuffer();
+        StringBuilder value = new StringBuilder();
         value.append("VALUES(");
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -78,21 +79,22 @@ public class SQLUtil {
 
         sql.replace(sql.length() - 1, sql.length(), ")");
         value.replace(value.length() - 1, value.length(), ")");
+        // append keys and values
         sql.append(value);
-        SQLCache.put(SQLUtil.SAVE_FLAG + AnnotateSupport.getEntityName(clazz), sql.toString());
+        SQLCache.put(SQLUtil.INSERT + AnnotateSupport.getEntityName(clazz), sql.toString());
         return sql.toString();
     }
 
     public static String update(Object object) {
         Class<?> clazz = object.getClass();
 
-        String cached = SQLCache.get(SQLUtil.UPDATE_FLAG + AnnotateSupport.getEntityName(clazz));
+        String cached = SQLCache.get(SQLUtil.UPDATE + AnnotateSupport.getEntityName(clazz));
 
         if (cached != null && cached.length() > 0) {
             return cached;
         }
 
-        StringBuffer sql = new StringBuffer();
+        StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append(" SET ");
@@ -110,25 +112,25 @@ public class SQLUtil {
         sql.replace(sql.length() - 1, sql.length(), "");
         sql.append(" WHERE ").append(AnnotateSupport.getIdName(clazz)).append("=").append("?");
 
-        SQLCache.put(SQLUtil.UPDATE_FLAG + AnnotateSupport.getEntityName(clazz), sql.toString());
+        SQLCache.put(SQLUtil.UPDATE + AnnotateSupport.getEntityName(clazz), sql.toString());
         return sql.toString();
     }
 
     public static String delete(Object object) {
         Class<?> clazz = object.getClass();
-        String cached = SQLCache.get(SQLUtil.DELETE_FLAG + AnnotateSupport.getEntityName(clazz));
+        String cached = SQLCache.get(SQLUtil.DELETE + AnnotateSupport.getEntityName(clazz));
 
         if (cached != null && cached.length() > 0) {
             return cached;
         }
 
-        StringBuffer sql = new StringBuffer("DELETE FROM ");
+        StringBuilder sql = new StringBuilder("DELETE FROM ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append(" WHERE ");
         String id = AnnotateSupport.getIdName(clazz);
         sql.append(id).append("=?");
 
-        SQLCache.put(SQLUtil.DELETE_FLAG + AnnotateSupport.getEntityName(clazz), sql.toString());
+        SQLCache.put(SQLUtil.DELETE + AnnotateSupport.getEntityName(clazz), sql.toString());
         return sql.toString();
     }
 
@@ -136,7 +138,7 @@ public class SQLUtil {
         // 新增字段: ALTER TABLE [表名] ADD [字段名] NVARCHAR (50) NULL，[字段名] NVARCHAR (50) NULL
         Class<?> clazz = object.getClass();
 
-        StringBuffer sql = new StringBuffer("ALTER TABLE ");
+        StringBuilder sql = new StringBuilder("ALTER TABLE ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append(" ADD ");
 
@@ -149,7 +151,7 @@ public class SQLUtil {
         // 删除字段: ALTER TABLE [表名] DROP COLUMN [字段名]
         Class<?> clazz = object.getClass();
 
-        StringBuffer sql = new StringBuffer("ALTER TABLE ");
+        StringBuilder sql = new StringBuilder("ALTER TABLE ");
         sql.append(AnnotateSupport.getEntityName(clazz));
         sql.append(" DROP ");
 
@@ -324,5 +326,4 @@ public class SQLUtil {
             return "TEXT";
         }
     }
-
 }

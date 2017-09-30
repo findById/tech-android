@@ -1,17 +1,15 @@
 package org.cn.orm;
 
-import java.io.Serializable;
-
 public interface OrmHelper {
     Query createQuery();
 
     Query createQuery(String query);
 
-    Object get(Class<?> clazz, Serializable id);
+    Object find(Class<?> entity, Object primaryKey);
 
-    void save(Object object);
+    void persist(Object entity);
 
-    void update(Object object);
+    void update(Object entity);
 
-    void delete(Object object);
+    void remove(Object entity);
 }

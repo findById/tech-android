@@ -14,7 +14,7 @@ public class AnnotateSupport {
 
     public static String getEntityName(Class<?> clazz, Entity entity) {
         if (entity != null) {
-            return "".equals(entity.name()) || entity.name() == null ? clazz.getSimpleName() : entity.name();
+            return entity.name() == null || "".equals(entity.name()) ? clazz.getSimpleName() : entity.name();
         }
         throw new IllegalArgumentException(clazz.getName() + " is not entity");
     }

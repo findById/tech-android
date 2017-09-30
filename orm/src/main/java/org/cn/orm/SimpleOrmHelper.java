@@ -9,7 +9,6 @@ import org.cn.orm.utils.AnnotateSupport;
 import org.cn.orm.utils.SQLUtil;
 import org.cn.orm.utils.SQLiteUtil;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,7 +20,7 @@ public class SimpleOrmHelper implements OrmHelper {
         this.helper = helper;
     }
 
-    public SQLiteDatabase getDatabase(boolean readonly) {
+    public SQLiteDatabase getCurrentDatabase(boolean readonly) {
         return helper.getDatabase(readonly);
     }
 
@@ -36,41 +35,56 @@ public class SimpleOrmHelper implements OrmHelper {
     }
 
     @Override
-    public Object get(Class<?> clazz, Serializable id) {
-        String sql = SQLUtil.findById(clazz);
-        Cursor cursor = helper.executeQuery(sql, String.valueOf(id));
+    public Object find(Class<?> entity, Object primaryKey) {
+        String sql = SQLUtil.findById(entity);
+        Cursor cursor = helper.executeQuery(sql, String.valueOf(primaryKey));
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            return SQLiteUtil.invokeField(clazz, cursor);
+            return SQLiteUtil.invokeField(entity, cursor);
         }
         return null;
     }
 
     @Override
-    public void save(Object object) {
-        String sql = SQLUtil.save(object);
-        helper.executeUpdate(sql, SQLUtil.getValues(object));
+    public void persist(Object entity) {
+        helper.executeUpdate(SQLUtil.insert(entity), SQLUtil.getValues(entity));
     }
 
     @Override
-    public void update(Object object) {
-        String sql = SQLUtil.update(object);
-        Object[] temp = SQLUtil.getUpdateValues(object);
+    public void update(Object entity) {
+        String sql = SQLUtil.update(entity);
+        Object[] temp = SQLUtil.getUpdateValues(entity);
         Object[] values = Arrays.copyOf(temp, temp.length + 1);
-        values[temp.length] = AnnotateSupport.getIdValue(object)[1];
+        values[temp.length] = AnnotateSupport.getIdValue(entity)[1];
         helper.executeUpdate(sql, values);
     }
 
     @Override
-    public void delete(Object object) {
-        String sql = SQLUtil.delete(object);
-        helper.executeUpdate(sql, AnnotateSupport.getIdValue(object)[1]);
+    public void remove(Object entity) {
+        String sql = SQLUtil.delete(entity);
+        helper.executeUpdate(sql, AnnotateSupport.getIdValue(entity)[1]);
     }
 
     public void saveAll(Object... objects) {
         helper.beginTransaction();
-        for (Object obj : objects) {
-            helper.executeUpdate(SQLUtil.save(obj), SQLUtil.getValues(obj));
+        for (Object entity : objects) {
+            persist(entity);
+        }
+        helper.commit();
+    }
+
+    public void saveOrUpdate(Object entity) {
+        if (find(entity.getClass(), AnnotateSupport.getIdValue(entity)[1]) != null) {
+            update(entity);
+        } else {
+            persist(entity);
+        }
+    }
+
+    public void saveOrUpdateAll(Object... objects) {
+        helper.beginTransaction();
+        for (Object entity : objects) {
+            saveOrUpdate(entity);
         }
         helper.commit();
     }
@@ -97,7 +111,5 @@ public class SimpleOrmHelper implements OrmHelper {
             }
             return new SimpleOrmHelper(helper);
         }
-
     }
-
 }
