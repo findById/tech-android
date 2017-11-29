@@ -59,17 +59,17 @@ tasks.withType(Javadoc) {
 uploadArchives {
     configuration = configurations.archives
     repositories.mavenDeployer {
-        repository(url: 'http://192.168.0.100:8081/repository/maven-tech/') {
-            authentication(userName: "tech-admin", password: "123456")
+        repository(url: 'http://localhost:8081/repository/maven-tech/') {
+            authentication(userName: "admin", password: "admin123")
         }
         pom.project {
-            url 'http://192.168.0.100:8081/repository/maven-tech/'
+            url 'http://localhost:8081/repository/maven-tech/'
             packaging 'jar'
             name project.name
             description project.name
-            groupId "$project.group"
+            groupId "${project.group}"
             artifactId project.name
-            version project.version
+            version android.defaultConfig.versionName
         }
     }
 }
@@ -93,5 +93,5 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
     archives sourcesJar
-    archives javadocJar
+//    archives javadocJar
 }
