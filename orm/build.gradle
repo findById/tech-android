@@ -29,7 +29,7 @@ dependencies {
     provided fileTree(dir: 'libs', include: ['*.jar'])
     provided "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:${rootProject.ext.espressoVersion}", {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoCoreVersion}", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 

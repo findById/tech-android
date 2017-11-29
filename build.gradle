@@ -22,8 +22,10 @@ ext {
     minSdkVersion = 21
     targetSdkVersion = 26
     supportLibVersion = "26.1.0"
-    espressoVersion = "2.2.2"
     constraintLayoutVersion = "1.0.2"
+
+    testRunnerVersion = '1.0.1'
+    testEspressoCoreVersion = '3.0.1'
 }
 
 allprojects {
