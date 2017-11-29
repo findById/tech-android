@@ -33,3 +33,43 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoCoreVersion}"
 }
+
+uploadArchives { // ./gradlew :common:uploadArchives
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        repository(url: 'http://localhost:8081/repository/maven-tech/') {
+            authentication(userName: "admin", password: "admin123")
+        }
+        pom.project {
+            url 'http://localhost:8081/repository/maven-tech/'
+            packaging 'jar'
+            name project.name
+            description project.name
+            groupId "org.cn.android"
+            artifactId project.name
+            version android.defaultConfig.versionName
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    // from sourceSets.main.allSource
+    // from sourceSets.main.java.sourceFiles
+    from android.sourceSets.main.java.sourceFiles
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+//    archives javadocJar
+}

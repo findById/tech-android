@@ -67,7 +67,7 @@ uploadArchives {
             packaging 'jar'
             name project.name
             description project.name
-            groupId "${project.group}"
+            groupId "org.cn.android"
             artifactId project.name
             version android.defaultConfig.versionName
         }
