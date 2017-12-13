@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Id {
     String value() default "";
+
+    boolean autoincrement() default false;
 }

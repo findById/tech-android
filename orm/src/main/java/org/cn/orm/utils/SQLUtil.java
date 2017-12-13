@@ -24,17 +24,23 @@ public class SQLUtil {
         for (Field field : clazz.getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class);
             if (column != null) {
+                String columnType = SQLiteUtil.getColumnType(field, column);
                 sql.append(AnnotateSupport.getColumnName(field, column));
                 sql.append(" ");
-                sql.append(SQLiteUtil.getColumnType(field));
-                sql.append("(");
-                sql.append(column.length());
-                sql.append(")");
+                sql.append(columnType);
+                if (columnType.contains("CHAR")) {
+                    sql.append("(");
+                    sql.append(column.length());
+                    sql.append(")");
+                }
                 sql.append(column.nullable() ? " NULL" : " NOT NULL");
             }
             Id id = field.getAnnotation(Id.class);
             if (id != null) {
                 sql.append(" PRIMARY KEY");
+                if (id.autoincrement()) {
+                    sql.append(" AUTOINCREMENT");
+                }
             }
             if (id != null || column != null) {
                 sql.append(",");
@@ -306,18 +312,16 @@ public class SQLUtil {
         }
     }
 
-    public static String getColumnType(Field field) {
+    public static String getColumnType(Field field, Column column) {
         Class<?> params = field.getType();
-        if (String.class.isAssignableFrom(params)) {
-            return "VARCHAR";
+        if (column != null && !column.type().isEmpty()) {
+            return column.type();
+        } else if (String.class.isAssignableFrom(params)) {
+            return "NVARCHAR";
+        } else if (long.class.isAssignableFrom(params) || double.class.isAssignableFrom(params) || float.class.isAssignableFrom(params)) {
+            return "REAL";
         } else if (int.class.isAssignableFrom(params)) {
             return "INTEGER";
-        } else if (long.class.isAssignableFrom(params)) {
-            return "VARCHAR";
-        } else if (double.class.isAssignableFrom(params)) {
-            return "VARCHAR";
-        } else if (float.class.isAssignableFrom(params)) {
-            return "VARCHAR";
         } else if (boolean.class.isAssignableFrom(params)) {
             return "INTEGER";
         } else if (byte[].class.isAssignableFrom(params)) {

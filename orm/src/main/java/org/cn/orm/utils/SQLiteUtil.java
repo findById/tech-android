@@ -1,7 +1,7 @@
 package org.cn.orm.utils;
 
 import android.database.Cursor;
-import android.util.Log;
+import android.text.TextUtils;
 
 import org.cn.orm.annotation.Column;
 
@@ -113,17 +113,15 @@ public class SQLiteUtil {
         }
     }
 
-    public static String getColumnType(Field field) {
+    public static String getColumnType(Field field, Column column) {
         Class<?> params = field.getType();
-        if (String.class.isAssignableFrom(params)) {
-            return "VARCHAR";
+        if (!TextUtils.isEmpty(column.type())) {
+            return column.type();
+        } else if (String.class.isAssignableFrom(params)) {
+            return "NVARCHAR";
+        } else if (long.class.isAssignableFrom(params) || double.class.isAssignableFrom(params) || float.class.isAssignableFrom(params)) {
+            return "REAL";
         } else if (int.class.isAssignableFrom(params)) {
-            return "INTEGER";
-        } else if (long.class.isAssignableFrom(params)) {
-            return "INTEGER";
-        } else if (double.class.isAssignableFrom(params)) {
-            return "INTEGER";
-        } else if (float.class.isAssignableFrom(params)) {
             return "INTEGER";
         } else if (boolean.class.isAssignableFrom(params)) {
             return "INTEGER";

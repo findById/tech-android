@@ -13,4 +13,6 @@ public @interface Column {
     int length() default 255;
 
     boolean nullable() default true;
+
+    String type() default "";
 }
