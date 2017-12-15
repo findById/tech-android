@@ -119,9 +119,9 @@ public class SQLiteUtil {
             return column.type();
         } else if (String.class.isAssignableFrom(params)) {
             return "NVARCHAR";
-        } else if (long.class.isAssignableFrom(params) || double.class.isAssignableFrom(params) || float.class.isAssignableFrom(params)) {
+        } else if (double.class.isAssignableFrom(params) || float.class.isAssignableFrom(params)) {
             return "REAL";
-        } else if (int.class.isAssignableFrom(params)) {
+        } else if (int.class.isAssignableFrom(params) || long.class.isAssignableFrom(params)) {
             return "INTEGER";
         } else if (boolean.class.isAssignableFrom(params)) {
             return "INTEGER";
