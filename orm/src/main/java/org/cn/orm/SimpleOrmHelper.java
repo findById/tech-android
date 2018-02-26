@@ -38,9 +38,15 @@ public class SimpleOrmHelper implements OrmHelper {
     public Object find(Class<?> entity, Object primaryKey) {
         String sql = SQLUtil.findById(entity);
         Cursor cursor = helper.executeQuery(sql, String.valueOf(primaryKey));
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            return SQLiteUtil.invokeField(entity, cursor);
+        try {
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                return SQLiteUtil.invokeField(entity, cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return null;
     }

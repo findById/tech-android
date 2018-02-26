@@ -79,6 +79,7 @@ public class QueryImpl implements Query {
             do {
                 list.add(SQLiteUtil.invokeField(entity, cursor));
             } while (cursor.moveToNext());
+            cursor.close();
         } catch (Throwable ignored) {
         }
         return list;
@@ -87,7 +88,13 @@ public class QueryImpl implements Query {
     @Override
     public Object getSingleResult() {
         Cursor cursor = helper.executeQuery(query.toString());
-        cursor.moveToFirst();
-        return SQLiteUtil.invokeField(entity, cursor);
+        try {
+            cursor.moveToFirst();
+            return SQLiteUtil.invokeField(entity, cursor);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }
